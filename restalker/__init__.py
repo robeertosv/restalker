@@ -52,8 +52,8 @@ def load_spacy_model():
         try:
             return spacy.load("en_core_web_md")
         except OSError:
-            # Download smallermodels if error
-            print("Descargando modelo de spaCy...")
+            # Download smaller models if error
+            print("Downloading spaCy model...")
             spacy.cli.download("en_core_web_sm")
             return spacy.load("en_core_web_sm")
 

@@ -258,14 +258,14 @@ class IPV6_Address(Item):
             if not address:
                 return False
 
-            # 1. LIMPIEZA DE ZONE ID (Crucial para Link-Local)
-            # Si llega "fe80::1%eth0", nos quedamos solo con "fe80::1"
+            # 1. ZONE ID CLEANUP (Crucial for Link-Local)
+            # if reaches "fe80::1%eth0", we are left with only "fe80::1"
             address = address.split('%')[0]
 
-            # 2. VALIDACIÓN DE SINTAXIS DE BORDES
-            # Una IPv6 no puede empezar o terminar con un solo ":" (debe ser "::" o nada)
-            # Mal: ":2001::1" -> False
-            # Bien: "::1" -> True
+            # 2. EDGE SYNTAX VALIDATION
+            # An IPv6 address cannot start or end with a single “:” (it must be “::” or nothing).
+            # Bad: ":2001::1" -> False
+            # Good: "::1" -> True
             if address.startswith(':') and not address.startswith('::'):
                 return False
             if address.endswith(':') and not address.endswith('::'):
@@ -306,7 +306,7 @@ class IPV6_Address(Item):
             ret = True
 
         except ValueError:
-            # Captura errores de conversión (ej: caracteres no hex como 'g', 'z')
+            # Captures conversion errors (e.g., non-hex characters such as ‘g’, ‘z’)
             return False
         finally:
             return ret
@@ -367,7 +367,7 @@ class URL(Item):
                 return True
 
             return False
-        except:
+        except Exception:
             return False
 
 class Whatsapp_URL(Item):
@@ -1304,14 +1304,14 @@ class reStalker:
         if self.url:
             seen_urls = set()
         
-        for match in re.finditer(any_url_regex, body):
-            url_candidate = match.group()
-            url_candidate = url_candidate.rstrip('.,;:!?"\')]}')
-            
-            if url_candidate not in seen_urls:
-                if URL.isvalid(url_candidate):
-                    seen_urls.add(url_candidate)
-                    yield URL(value=url_candidate)
+            for match in re.finditer(any_url_regex, body):
+                url_candidate = match.group()
+                url_candidate = url_candidate.rstrip('.,;:!?"\')]}')
+                
+                if url_candidate not in seen_urls:
+                    if URL.isvalid(url_candidate):
+                        seen_urls.add(url_candidate)
+                        yield URL(value=url_candidate)
 
         if self.tor:
             tor_links = self.extract_links(

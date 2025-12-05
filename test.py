@@ -3303,7 +3303,7 @@ tg://resource?id=blablabla
 
 """
 
-# Cargar modelo de spaCy - puede que necesites descargarlo primero con:
+# Loading spaCy model - perhaps you need to download it first:
 # python -m spacy download es_core_news_sm
 try:
     nlp = spacy.load("es_core_news_md")
@@ -3311,20 +3311,20 @@ except OSError:
     try:
         nlp = spacy.load("en_core_web_md")
     except OSError:
-        print("Descargando modelo de spaCy...")
+        print("Downloading spaCy model...")
         spacy.cli.download("en_core_web_sm")
         nlp = spacy.load("en_core_web_sm")
 
 #s = restalker.reStalker(telegram=True)
-# Test para reconocimiento de URLs de Tor
+# Test for recognizing Tor URLs
 s = restalker.reStalker(tor=True)
 result = list(s.parse(target))
 print(f"Len: {len(result)}")
 for p in result:
     print(p)
 
-# Test adicional para reconocimiento de entidades nombradas
-print("\n--- Test de reconocimiento de entidades con spaCy ---")
+# Additional test for named entity recognition
+print("\n--- Entity recognition test with spaCy ---")
 test_text = """
 Google Inc. ha abierto una nueva oficina en Madrid, España. 
 El CEO de Microsoft, Satya Nadella, visitará Barcelona el próximo mes.
@@ -3334,12 +3334,12 @@ La Universidad Autónoma de Madrid y el CSIC han firmado un acuerdo de colaborac
 
 s_ner = restalker.reStalker(organization=True, location=True, own_name=True)
 result_ner = list(s_ner.parse(test_text))
-print(f"Entidades encontradas: {len(result_ner)}")
+print(f"Entities found: {len(result_ner)}")
 for entity in result_ner:
     print(entity)
 
-# Test para extracción de frases clave
-print("\n--- Test de extracción de frases clave con spaCy ---")
+# Test for extracting key phrases
+print("\n--- Key phrase extraction test with spaCy ---")
 test_keywords = """
 La inteligencia artificial está transformando la forma en que interactuamos con la tecnología.
 El procesamiento de lenguaje natural permite a las máquinas entender el lenguaje humano.
@@ -3348,6 +3348,6 @@ Los modelos de aprendizaje automático pueden analizar grandes cantidades de dat
 
 s_keys = restalker.reStalker(keyphrase=True)
 result_keys = list(s_keys.parse(test_keywords))
-print(f"Frases clave encontradas: {len(result_keys)}")
+print(f"Key phrases found: {len(result_keys)}")
 for key in result_keys:
     print(key)

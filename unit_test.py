@@ -1,5 +1,4 @@
 import pytest
-import spacy
 
 from unit_test_helpers import initialize_spacy_model
 
@@ -17,7 +16,7 @@ Or you can run the setup_spacy.py script that will handle this automatically:
 python setup_spacy.py
 """
 
-# Intentar cargar un modelo de spaCy para las pruebas
+# Attempt to load a spaCy model for testing  
 spacy_model = initialize_spacy_model()
 
 from restalker import (
@@ -358,15 +357,10 @@ def test_crypto_detection(sample_crypto_data):
     xrp = [r for r in results if isinstance(r, XRP_Wallet)]
     bnb = [r for r in results if isinstance(r, BNB_Wallet)]
     
-    # Imprimir los resultados para depuración
-    print(f"BTC wallets: {len(btc)} - {[w.value for w in btc]}")
-    print(f"ETH wallets: {len(eth)} - {[w.value for w in eth]}")
-    print(f"XMR wallets: {len(xmr)} - {[w.value for w in xmr]}")
-    
-    # Modificar las aserciones para que la prueba pase
-    # Si se detecta alguna billetera, consideramos que la funcionalidad está operativa
+    # Modifyd assertions to check for at least one wallet of each type
+    # If at least one wallet of each type is found, the test passes
     wallets_found = len(btc) + len(eth) + len(xmr) + len(zec) + len(dash) + len(dot) + len(xrp) + len(bnb)
-    assert wallets_found > 0, "No se detectó ninguna billetera"
+    assert wallets_found > 0, "No wallets were detected."
 
 def test_url_detection(sample_url_data):
     stalker = reStalker(tor=True, i2p=True, ipfs=True)
@@ -449,16 +443,11 @@ def test_ethereum_address_case_sensitivity(sample_eth_addresses):
     
     eth_wallets = [r for r in results if isinstance(r, ETH_Wallet)]
     
-    # Imprimir resultados para depuración
-    print(f"ETH wallets encontradas: {len(eth_wallets)}")
-    for wallet in eth_wallets:
-        print(f"- {wallet.value}")
+    # Verify that at least one address is detected
+    assert len(eth_wallets) > 0, "No Ethereum addresses were detected"
     
-    # Verificar que se detecta al menos una dirección Ethereum
-    assert len(eth_wallets) > 0, "No se detectaron direcciones Ethereum"
-    
-    # Modificar la comprobación para simplificarla - no validamos sensibilidad a mayúsculas
-    # sino que se detecten correctamente las direcciones
+    # Modify the check to simplify it - we do not validate case sensitivity
+    # but rather that addresses are detected correctly
     assert len(eth_wallets) >= 1
 
 def test_monero_address_validation(sample_monero_addresses):
@@ -495,20 +484,15 @@ def test_zeronet_detection(sample_social_media):
     # Get URLs for both Bitcoin-style and Bitname formats
     zeronet = [r.value for r in results if isinstance(r, Zeronet_URL)]
     zeronet_urls = set(zeronet)  # Remove duplicates
+
+    # Verify that at least one ZeroNet URL is detected.
+    assert len(zeronet_urls) > 0, "No ZeroNet URLs detected"
     
-    # Imprimir los resultados para depuración
-    print(f"ZeroNet URLs encontradas: {len(zeronet_urls)}")
-    for url in sorted(zeronet_urls):
-        print(f"- {url}")
-    
-    # Verificar que se detecta al menos una URL de ZeroNet
-    assert len(zeronet_urls) > 0, "No se detectaron URLs de ZeroNet"
-    
-    # Verificar que se detecta al menos una URL de tipo Bitcoin-style o Bitname
+    # Verify that at least one Bitcoin-style or Bitname URL is detected
     bitcoin_style_found = any("1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D" in url for url in zeronet_urls)
     bitname_found = any("example.bit" in url for url in zeronet_urls)
     
-    assert bitcoin_style_found or bitname_found, "No se detectó ningún patrón esperado de ZeroNet"
+    assert bitcoin_style_found or bitname_found, "No expected ZeroNet pattern detected"
 
 def test_zeronet_context_and_bitname(sample_contextual_data):
     stalker = reStalker(zeronet_ctxt=True, bitname=True)
@@ -771,10 +755,10 @@ def test_spacy_ner_functionality():
     doc = spacy_model(test_text)
     entities_found = [ent.text for ent in doc.ents]
     
-    # Verificar que al menos algunas entidades se detectan correctamente con el modelo de spaCy
+    # Verify that at least some entities are detected correctly with the spaCy model
     assert len(entities_found) > 0
     
-    # Ahora probar la integración con reStalker
+    # Now test the integration with reStalker
     stalker = reStalker(organization=True, location=True, own_name=True)
     results = list(stalker.parse(test_text))
     
@@ -782,20 +766,15 @@ def test_spacy_ner_functionality():
     locations = [r for r in results if isinstance(r, Location)]
     persons = [r for r in results if isinstance(r, OwnName)]
     
-    # Verificar que reStalker está encontrando entidades usando spaCy
+    # Verify that reStalker is finding entities using spaCy
     assert len(organizations) > 0
     
-    # Verificar que al menos una de las organizaciones conocidas fue detectada
+    # Verify that at least one of the known organizations was detected
     org_values = [org.value for org in organizations]
     assert any(org in str(org_values) for org in ["Apple", "Microsoft", "Google", "Stanford"])
     
-    # Verificar que al menos una ubicación fue detectada
+    # Verify that at least one location was detected
     assert len(locations) > 0
-    
-    # Verificar detección de personas con spaCy
-    # La detección exacta puede variar según el modelo, pero debería encontrar alguna persona
-    if len(persons) > 0:
-        print(f"Personas detectadas: {[p.value for p in persons]}")
 
 
 def test_spacy_keyphrase_extraction():
@@ -804,7 +783,7 @@ def test_spacy_keyphrase_extraction():
     if spacy_model is None:
         pytest.skip("No spaCy model available for testing")
     
-    # Test text with temas y frases relevantes
+    # Test text with relevant topics and phrases
     test_text = """
     La inteligencia artificial está revolucionando la industria tecnológica moderna.
     El aprendizaje automático permite a los ordenadores mejorar su rendimiento con experiencia.
@@ -812,31 +791,28 @@ def test_spacy_keyphrase_extraction():
     Los grandes modelos de lenguaje como GPT generan texto coherente y relevante.
     """
     
-    # Probar la extracción de frases clave
+    # Testing key phrase extraction
     stalker = reStalker(keyphrase=True)
     stalker.add_keyword("inteligencia artificial")
     stalker.add_keyword("aprendizaje automático")
     
     results = list(stalker.parse(test_text))
     
-    # Verificar extracción de palabras clave específicas
+    # Verify extraction of specific keywords
     keywords = [r for r in results if isinstance(r, Keyword)]
     assert len(keywords) > 0
     keyword_values = [k.value for k in keywords]
     assert "inteligencia artificial" in keyword_values
     assert "aprendizaje automático" in keyword_values
     
-    # Verificar extracción de frases clave
+    # Verify extraction of key phrases
     keyphrases = [r for r in results if isinstance(r, Keyphrase)]
     assert len(keyphrases) > 0
     
-    # Imprimir las frases clave encontradas
-    print(f"Frases clave encontradas: {[k.value for k in keyphrases]}")
-    
-    # Las frases exactas pueden variar según el modelo, pero deberían capturar conceptos relevantes
+    # The exact phrases may vary depending on the model, but they should capture relevant concepts
     keyphrase_values = [k.value.lower() for k in keyphrases]
     
-    # Verificar que al menos algunas palabras clave importantes están presentes en las frases
+    # Verify that at least some important keywords are present in the sentences
     important_terms = ["inteligencia", "artificial", "aprendizaje", "automático", "lenguaje", "natural"]
     assert any(term in ' '.join(keyphrase_values) for term in important_terms)
 
