@@ -3301,6 +3301,18 @@ tgclick.com/secret-resource
 tg://resource?id=007
 tg://resource?id=blablabla
 
+Phone numbers:
++34 600 123 456
++1 202 555 0148
++44 7911 123456
++34 612 345 678
++49 1512 7789012
++33 06 12 34 56 78
++34 612 345 67
++1 202 555 01489
++44 79A1 123456
++49-1512-778-9012-3
+202 555 0148 
 """
 
 # Loading spaCy model - perhaps you need to download it first:
